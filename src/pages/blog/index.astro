@@ -1,0 +1,48 @@
+---
+import Base from '@/layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base title="Blog - Alok" description="Articles and thoughts">
+  <h1 class="text-3xl font-bold mb-2">Blog</h1>
+  <p class="text-neutral-500 dark:text-neutral-400 mb-8">
+    Thoughts, tutorials, and things I've learned.
+  </p>
+
+  {
+    posts.length === 0 ? (
+      <p class="text-neutral-500 dark:text-neutral-400 italic">
+        No posts yet. Check back soon!
+      </p>
+    ) : (
+      <ul class="space-y-3">
+        {posts.map((post) => (
+          <li>
+            <a
+              href={`/blog/${post.id}`}
+              class="flex justify-between items-baseline gap-4 no-underline py-2 border-b border-neutral-200 dark:border-neutral-800 group"
+            >
+              <span class="text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                {post.data.title}
+              </span>
+              <time
+                datetime={post.data.date.toISOString()}
+                class="text-neutral-500 dark:text-neutral-400 text-sm shrink-0"
+              >
+                {post.data.date.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </time>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>
